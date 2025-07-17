@@ -2,7 +2,7 @@
 
 Minimal state-machine API to manage configurable workflows.
 
-## ✅ Features
+## Features
 
 - Create workflows (states + transitions)
 - Start instances
@@ -10,11 +10,10 @@ Minimal state-machine API to manage configurable workflows.
 - Validate all transitions
 - In-memory data (no DB)
 
-## 🛠 Requirements
+## Requirements
 
 - .NET 8 SDK
 
-## 🚀 Run Locally
+## Run Locally
 
-```bash
 dotnet run
