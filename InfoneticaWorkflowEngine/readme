@@ -1,0 +1,20 @@
+# Infonetica Workflow Engine
+
+Minimal state-machine API to manage configurable workflows.
+
+## ✅ Features
+
+- Create workflows (states + transitions)
+- Start instances
+- Transition states via actions
+- Validate all transitions
+- In-memory data (no DB)
+
+## 🛠 Requirements
+
+- .NET 8 SDK
+
+## 🚀 Run Locally
+
+```bash
+dotnet run
