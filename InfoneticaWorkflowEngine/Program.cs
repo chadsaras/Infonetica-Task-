@@ -30,6 +30,12 @@ app.MapPost("/workflow/{id}/start", (string id) =>
     return Results.Ok(instance);
 });
 
+app.MapGet("/workflows", () =>
+{
+    return Results.Ok(service.Definitions);
+});
+
+
 app.MapPost("/instance/{id}/action/{actionId}", (string id, string actionId) =>
 {
     var (success, error) = service.ExecuteAction(id, actionId);
@@ -53,6 +59,37 @@ app.MapGet("/instances", () =>
 
     return Results.Ok(instancesWithState);
 });
+
+app.MapGet("/instance/{id}/available-actions", (string id) =>
+{
+    var instance = service.GetInstance(id);
+    if (instance is null)
+        return Results.NotFound("Instance not found.");
+
+    var def = service.GetDefinition(instance.WorkflowDefinitionId);
+    if (def is null)
+        return Results.NotFound("Workflow definition not found.");
+
+    var currentStateId = instance.CurrentStateId;
+
+    var currentState = def.States.FirstOrDefault(s => s.Id.Equals(currentStateId, StringComparison.OrdinalIgnoreCase));
+    if (currentState is null)
+        return Results.BadRequest("Current state is not found in workflow.");
+
+    if (currentState.IsFinal)
+        return Results.Ok(new { CurrentState = currentStateId, AvailableActions = new List<string>() });
+
+    var availableActions = def.Actions
+        .Where(a =>
+            a.Enabled &&
+            a.FromStates.Any(from => string.Equals(from, currentStateId, StringComparison.OrdinalIgnoreCase))
+        )
+        .Select(a => new { a.Id, a.Name, a.ToState })
+        .ToList();
+
+    return Results.Ok(new { CurrentState = currentStateId, AvailableActions = availableActions });
+});
+
 
 app.MapGet("/", () => "Workflow Engine is running.");
 app.Run();
